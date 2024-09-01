@@ -1,0 +1,37 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+import pandas as pd
+
+# Example questions from SF-36 (replace with actual questions from your dataset)
+sf_36_questions = [
+    "How often do you feel fatigued in daily life?", 
+    "Do you feel that your energy has increased recently?", 
+    "Please describe your level of energy when performing physical activities.", 
+    "How long does it take you to recover after activities?",
+    # Add all other SF-36 questions here
+]
+
+# Feature extraction using TF-IDF
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(sf_36_questions)
+
+# Dimensionality reduction using SVD to aggregate into 4 main themes
+svd = TruncatedSVD(n_components=4)
+X_reduced = svd.fit_transform(X)
+
+# Identifying the most relevant questions for each aggregated theme
+feature_names = vectorizer.get_feature_names_out()
+topn_indices = X_reduced.argsort(axis=0)[-4:]  # Select top 4 representative questions
+
+# Creating a DataFrame to display the results
+aggregated_questions = []
+for i, indices in enumerate(topn_indices.T):
+    aggregated_theme = [sf_36_questions[index] for index in indices]
+    aggregated_questions.append(aggregated_theme)
+
+# Converting to DataFrame for better visualization
+df_aggregated = pd.DataFrame(aggregated_questions).T
+df_aggregated.columns = [f'Aggregated Theme {i+1}' for i in range(4)]
+
+# Displaying the DataFrame
+import ace_tools as tools; tools.display_dataframe_to_user(name="Aggregated SF-36 Questions", dataframe=df_aggregated)
