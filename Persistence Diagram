@@ -1,0 +1,20 @@
+# Install necessary libraries
+!pip install ripser persim
+
+# Import libraries
+import numpy as np
+from ripser import ripser
+from persim import plot_diagrams
+import matplotlib.pyplot as plt
+
+# Example distance matrix, replace with your data
+distance_matrix = np.random.rand(30, 30)  # Replace with the actual distance matrix
+
+# Perform persistent homology
+diagrams = ripser(distance_matrix, distance_matrix=True)['dgms']
+
+# Plot persistence diagrams
+plt.figure(figsize=(10, 6))
+plot_diagrams(diagrams, show=True)
+plt.title('Persistent Homology: Persistence Diagram')
+plt.show()
